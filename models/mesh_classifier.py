@@ -27,6 +27,7 @@ class ClassifierModel:
 
         #
         self.nclasses = opt.nclasses
+        self.classes = []
 
         # load/define networks
         self.net = networks.define_classifier(opt.input_nc, opt.ncf, opt.ninput_edges, opt.nclasses, opt,
@@ -113,6 +114,12 @@ class ClassifierModel:
             label_class = self.labels
             self.export_segmentation(pred_class.cpu())
             correct = self.get_accuracy(pred_class, label_class)
+
+            with open(self.save_dir + '/pred_classes.txt', 'a+') as pred_classes_file:
+                assert len(self.mesh) == len(pred_class)
+                for mesh_index, single_mesh in enumerate(self.mesh):
+                    pred_classes_file.write(single_mesh.filename + ' ' + self.classes[pred_class[mesh_index]] + '\n')
+
         return correct, len(label_class)
 
     def get_accuracy(self, pred, labels):

@@ -10,6 +10,11 @@ def run_test(epoch=-1):
     opt.serial_batches = True  # no shuffle
     dataset = DataLoader(opt)
     model = create_model(opt)
+    model.classes = dataset.dataset.classes
+
+    with open(model.save_dir + '/pred_classes.txt', 'w') as pred_classes_file:
+        pass
+
     writer = Writer(opt)
     # test
     writer.reset_counter()

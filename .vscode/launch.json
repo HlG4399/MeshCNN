@@ -1,0 +1,85 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "test",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--dataroot",
+                "datasets/shrec_16",
+                "--name",
+                "shrec16",
+                "--ncf",
+                "64",
+                "128",
+                "256",
+                "256",
+                "--pool_res",
+                "600",
+                "450",
+                "300",
+                "180",
+                "--norm",
+                "group",
+                "--resblocks",
+                "1",
+                "--export_folder",
+                "meshes"
+            ]
+        },
+        {
+            "name": "train",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--dataroot",
+                "datasets/shrec_16",
+                "--name",
+                "shrec16",
+                "--ncf",
+                "64",
+                "128",
+                "256",
+                "256",
+                "--pool_res",
+                "600",
+                "450",
+                "300",
+                "180",
+                "--norm",
+                "group",
+                "--resblocks",
+                "1",
+                "--flip_edges",
+                "0.2",
+                "--slide_verts",
+                "0.2",
+                "--num_aug",
+                "20",
+                "--niter_decay",
+                "100"
+            ]
+        },
+        {
+            "name": "mesh_viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--files",
+                "checkpoints/shrec16/meshes/T124_0.obj",
+                "checkpoints/shrec16/meshes/T124_2.obj",
+                "checkpoints/shrec16/meshes/T124_4.obj",
+            ]
+        }
+    ]
+}
