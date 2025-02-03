@@ -7,6 +7,8 @@ from models.layers.mesh_conv import MeshConv
 import torch.nn.functional as F
 from models.layers.mesh_pool import MeshPool
 from models.layers.mesh_unpool import MeshUnpool
+from options.test_options import TestOptions
+from data import DataLoader
 
 
 ###############################################################################
@@ -141,8 +143,26 @@ class MeshConvNet(nn.Module):
         # self.gp = torch.nn.MaxPool1d(self.res[-1])
         self.fc1 = nn.Linear(self.k[-1], fc_n)
         self.fc2 = nn.Linear(fc_n, nclasses)
+    
+    def load_mesh_data(self):
+        opt = TestOptions().parse()
+        opt.serial_batches = True  # no shuffle
+        dataset = DataLoader(opt)
+        self.dataloader = dataset.dataloader
 
     def forward(self, x, mesh):
+        if mesh.shape in [(1,), torch.Size([1])]:
+            if not hasattr(self, 'dataloader'):
+                self.load_mesh_data()
+            
+            mesh_index = mesh.sum()
+            mesh = None
+            for i, data in enumerate(self.dataloader):
+                if i == mesh_index:
+                    mesh = data['mesh']
+                    break
+            
+            assert mesh is not None
 
         for i in range(len(self.k) - 1):
             x = getattr(self, 'conv{}'.format(i))(x, mesh)
@@ -231,7 +251,8 @@ class DownConv(nn.Module):
             x2 = x2 + x1
             x2 = F.relu(x2)
             x1 = x2
-        x2 = x2.squeeze(3)
+        if x2.dim() > 1 and x2.size(3) == 1:
+            x2 = x2.squeeze(3)
         before_pool = None
         if self.pool:
             before_pool = x2
@@ -268,7 +289,9 @@ class UpConv(nn.Module):
 
     def forward(self, x, from_down):
         from_up, meshes = x
-        x1 = self.up_conv(from_up, meshes).squeeze(3)
+        x1 = self.up_conv(from_up, meshes)
+        if x1.dim() > 1 and x1.size(3) == 1:
+            x1 = self.up_conv(from_up, meshes).squeeze(3)
         if self.unroll:
             x1 = self.unroll(x1, meshes)
         if self.transfer_data:
@@ -286,7 +309,8 @@ class UpConv(nn.Module):
                 x2 = x2 + x1
             x2 = F.relu(x2)
             x1 = x2
-        x2 = x2.squeeze(3)
+        if x2.dim() > 1 and x2.size(3) == 1:
+            x2 = x2.squeeze(3)
         return x2
 
 
@@ -340,7 +364,9 @@ class MeshEncoder(nn.Module):
                 fe = self.fcs[i](fe)
                 if self.fcs_bn:
                     x = fe.unsqueeze(1)
-                    fe = self.fcs_bn[i](x).squeeze(1)
+                    fe = self.fcs_bn[i](x)
+                    if fe.dim() > 1 and fe.size(1) == 1:
+                        fe = fe.squeeze(1)
                 if i < len(self.fcs) - 1:
                     fe = F.relu(fe)
         return fe, encoder_outs

@@ -5,35 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "test",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "args": [
-                "--dataroot",
-                "datasets/shrec_16",
-                "--name",
-                "shrec16",
-                "--ncf",
-                "64",
-                "128",
-                "256",
-                "256",
-                "--pool_res",
-                "600",
-                "450",
-                "300",
-                "180",
-                "--norm",
-                "group",
-                "--resblocks",
-                "1",
-                "--export_folder",
-                "meshes"
-            ]
-        },
-        {
             "name": "train",
             "type": "debugpy",
             "request": "launch",
@@ -69,6 +40,35 @@
             ]
         },
         {
+            "name": "test",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--dataroot",
+                "datasets/shrec_16",
+                "--name",
+                "shrec16",
+                "--ncf",
+                "64",
+                "128",
+                "256",
+                "256",
+                "--pool_res",
+                "600",
+                "450",
+                "300",
+                "180",
+                "--norm",
+                "group",
+                "--resblocks",
+                "1",
+                "--export_folder",
+                "meshes"
+            ]
+        },
+        {
             "name": "mesh_viewer",
             "type": "debugpy",
             "request": "launch",
@@ -79,6 +79,35 @@
                 "checkpoints/shrec16/meshes/T124_0.obj",
                 "checkpoints/shrec16/meshes/T124_2.obj",
                 "checkpoints/shrec16/meshes/T124_4.obj",
+            ]
+        },
+        {
+            "name": "convert",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--dataroot",
+                "datasets/shrec_16",
+                "--name",
+                "shrec16",
+                "--ncf",
+                "64",
+                "128",
+                "256",
+                "256",
+                "--pool_res",
+                "600",
+                "450",
+                "300",
+                "180",
+                "--norm",
+                "group",
+                "--resblocks",
+                "1",
+                "--export_folder",
+                "meshes"
             ]
         }
     ]

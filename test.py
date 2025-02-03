@@ -12,7 +12,7 @@ def run_test(epoch=-1):
     model = create_model(opt)
     model.classes = dataset.dataset.classes
 
-    with open(model.save_dir + '/pred_classes.txt', 'w') as pred_classes_file:
+    with open(model.save_dir + '/pred_classes.txt', 'w'):
         pass
 
     writer = Writer(opt)
