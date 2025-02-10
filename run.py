@@ -12,9 +12,6 @@ def run(epoch=-1):
     model = create_model(opt)
     model.classes = dataset.dataset.classes
 
-    with open(model.save_dir + '/pred_classes.txt', 'w'):
-        pass
-
     writer = Writer(opt)
     # test
     writer.reset_counter()

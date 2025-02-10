@@ -2,6 +2,7 @@ import torch
 from . import networks
 from os.path import join
 from util.util import seg_accuracy, print_network
+import json
 
 
 class ClassifierModel:
@@ -115,10 +116,14 @@ class ClassifierModel:
             self.export_segmentation(pred_class.cpu())
             correct = self.get_accuracy(pred_class, label_class)
 
-            with open(self.save_dir + '/pred_classes.txt', 'a+') as pred_classes_file:
+            with open(self.save_dir + '/pred_classes.json', 'w', encoding='utf-8') as pred_classes_file:
+                pred_classes_dict = json.load(pred_classes_file)
+
                 assert len(self.mesh) == len(pred_class)
                 for mesh_index, single_mesh in enumerate(self.mesh):
-                    pred_classes_file.write(single_mesh.filename + ' ' + self.classes[pred_class[mesh_index]] + '\n')
+                    pred_classes_dict.update({single_mesh.filename: self.classes[pred_class[mesh_index]]})
+                
+                json.dump(pred_classes_dict, pred_classes_file, ensure_ascii=False, indent=4)
 
         return correct, len(label_class)
 
