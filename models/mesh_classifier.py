@@ -117,7 +117,10 @@ class ClassifierModel:
             correct = self.get_accuracy(pred_class, label_class)
 
             with open(self.save_dir + '/pred_classes.json', 'w', encoding='utf-8') as pred_classes_file:
-                pred_classes_dict = json.load(pred_classes_file)
+                try:
+                    pred_classes_dict = json.load(pred_classes_file)
+                except Exception:
+                    pred_classes_dict = {}
 
                 assert len(self.mesh) == len(pred_class)
                 for mesh_index, single_mesh in enumerate(self.mesh):
