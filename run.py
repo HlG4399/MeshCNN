@@ -6,12 +6,12 @@ import os
 import shutil
 
 
-def sync_empty_dirs(source_path, target_path):
+def sync_empty_dirs(source_path, target_path, ignore_path=None):
     # 清空目标目录所有内容（保留目录本身）
     if os.path.exists(target_path):
         for item in os.listdir(target_path):
             item_path = os.path.join(target_path, item)
-            if 'meshes_to_pred' in item_path:
+            if ignore_path is not None and ignore_path in item_path:
                 item_test_path = item_path + '/test'
                 if not os.path.exists(item_test_path):
                     os.makedirs(item_test_path)
@@ -86,6 +86,24 @@ def sync_directories(source_dir, target_dir):
         print(f"已删除: {filename} from {target_path}")
 
 
+def copy_files_with_check(src_dir, max_copy=3):
+    # 获取待处理文件列表
+    all_files = [f for f in os.listdir(src_dir) if os.path.isfile(os.path.join(src_dir, f))]
+    new_files = [f for f in all_files if '_copy' not in f and f.endswith('.obj')]
+
+    # 执行复制操作
+    if len(new_files) > 0:
+        print(f"开始复制 {len(new_files)} 个新文件：")
+        for file in new_files:
+            src_dir = os.path.join(src_dir, file)
+            src_dir_without_suffix = src_dir[:-4]
+            for i in range(max_copy):
+                shutil.copy2(src_dir, src_dir_without_suffix + f'_copy{i}.obj')
+            print(f"√ 已复制 {file}")
+    else:
+        print("没有需要复制的新文件")
+
+
 def run(epoch=-1):
     print('Running')
     opt = TestOptions().parse()
@@ -95,7 +113,7 @@ def run(epoch=-1):
     assert os.path.exists(source_folder)
 
     target_folder = opt.dataroot
-    sync_empty_dirs(source_folder, target_folder)
+    sync_empty_dirs(source_folder, target_folder, ignore_path='meshes_to_pred')
 
     alien_test_sub_folder = '/alien/test'
     alien_test_source_folder = source_folder + alien_test_sub_folder
@@ -103,6 +121,9 @@ def run(epoch=-1):
 
     alien_test_target_folder = target_folder + alien_test_sub_folder
     sync_directories(alien_test_source_folder, alien_test_target_folder)
+
+    meshes_to_pred_folder = target_folder + '/meshes_to_pred/test'
+    copy_files_with_check(meshes_to_pred_folder)
 
     dataset = DataLoader(opt)
     model = create_model(opt)
