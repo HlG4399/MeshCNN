@@ -86,16 +86,16 @@ def sync_directories(source_dir, target_dir):
         print(f"已删除: {filename} from {target_path}")
 
 
-def copy_files_with_check(src_dir, max_copy=3):
+def copy_files_with_check(ori_src_dir, max_copy=3):
     # 获取待处理文件列表
-    all_files = [f for f in os.listdir(src_dir) if os.path.isfile(os.path.join(src_dir, f))]
+    all_files = [f for f in os.listdir(ori_src_dir) if os.path.isfile(os.path.join(ori_src_dir, f))]
     new_files = [f for f in all_files if '_copy' not in f and f.endswith('.obj')]
 
     # 执行复制操作
     if len(new_files) > 0:
         print(f"开始复制 {len(new_files)} 个新文件：")
         for file in new_files:
-            src_dir = os.path.join(src_dir, file)
+            src_dir = os.path.join(ori_src_dir, file)
             src_dir_without_suffix = src_dir[:-4]
             for i in range(max_copy):
                 shutil.copy2(src_dir, src_dir_without_suffix + f'_copy{i}.obj')
@@ -109,7 +109,9 @@ def run(epoch=-1):
     opt = TestOptions().parse()
     opt.serial_batches = True  # no shuffle
 
-    source_folder = "./datasets/shrec_16"
+    os.chdir(__file__ + '/..')
+
+    source_folder = './datasets/shrec_16'
     assert os.path.exists(source_folder)
 
     target_folder = opt.dataroot
