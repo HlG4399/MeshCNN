@@ -115,13 +115,16 @@ class ClassifierModel:
             label_class = self.labels
             self.export_segmentation(pred_class.cpu())
             correct = self.get_accuracy(pred_class, label_class)
+            
+            pred_classes_json_file_path = self.save_dir + '/pred_classes.json'
+            pred_classes_dict = {}
+            try:
+                with open(pred_classes_json_file_path, 'r', encoding='utf-8') as file:
+                    pred_classes_dict = json.load(file)
+            except Exception:
+                pred_classes_dict = {}
 
-            with open(self.save_dir + '/pred_classes.json', 'w', encoding='utf-8') as pred_classes_file:
-                try:
-                    pred_classes_dict = json.load(pred_classes_file)
-                except Exception:
-                    pred_classes_dict = {}
-
+            with open(pred_classes_json_file_path, 'w', encoding='utf-8') as pred_classes_file:
                 assert len(self.mesh) == len(pred_class)
                 for mesh_index, single_mesh in enumerate(self.mesh):
                     pred_classes_dict.update({single_mesh.filename: self.classes[pred_class[mesh_index]]})
